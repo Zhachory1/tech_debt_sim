@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Debt Simulation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .control-group {
+            display: inline-block;
+            margin: 10px 15px;
+        }
+        
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #005a9e;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .simulation-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .stat-title {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .reputation { color: #28a745; }
+        .users { color: #007bff; }
+        .revenue { color: #ffc107; }
+        .quality { color: #dc3545; }
+        .developers { color: #6f42c1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tech Debt Simulation</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <button id="startBtn">Start Simulation</button>
+                <button id="pauseBtn" disabled>Pause</button>
+                <button id="resetBtn">Reset</button>
+            </div>
+            <div class="control-group">
+                <button id="addDevBtn">Add Developer</button>
+                <button id="addProjectBtn">Add Feature Project</button>
+                <button id="addTechDebtBtn">Add Tech Debt Project</button>
+            </div>
+        </div>
+        
+        <div class="simulation-container">
+            <div class="stats" id="stats">
+                <div class="stat-card">
+                    <div class="stat-title">Product Reputation</div>
+                    <div class="stat-value reputation" id="reputation">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">User Count</div>
+                    <div class="stat-value users" id="userCount">1000</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Monthly Revenue</div>
+                    <div class="stat-value revenue" id="revenue">$0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Code Quality</div>
+                    <div class="stat-value quality" id="codeQuality">100</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Active Developers</div>
+                    <div class="stat-value developers" id="developerCount">3</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Ideas in Queue</div>
+                    <div class="stat-value" id="ideaQueue">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Todo Items</div>
+                    <div class="stat-value" id="todoList">0</div>
+                </div>
+            </div>
+            
+            <div id="canvas-container"></div>
+        </div>
+    </div>
+
+    <!-- Load all the class files -->
+    <script src="js/project.js"></script>
+    <script src="js/developer.js"></script>
+    <script src="js/team.js"></script>
+    <script src="js/codebase.js"></script>
+    <script src="js/product.js"></script>
+    <script src="js/lead.js"></script>
+    <script src="js/simulation.js"></script>
+    <script src="js/sketch.js"></script>
+</body>
+</html>
