@@ -12,8 +12,8 @@ class Simulation {
         // Initialize all components
         this.constants = new Constants();
         this.product = new Product(1000, this.constants);
-        this.codebase = new Codebase(80);
-        this.engineeringTeam = new EngineeringTeam(3);
+        this.codebase = new Codebase(80, this.constants);
+        this.engineeringTeam = new EngineeringTeam(3, this.constants);
         this.leads = []; // You can add leads as needed
         
         // Connect dependencies

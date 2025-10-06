@@ -14,16 +14,17 @@ class Project {
         this.approved = false;
         this.createdAt = Date.now();
         this.hasAffectedReputation = false; // To ensure single reputation impact
-        if (constants != null && constants instanceof Constants) {
-            this.setConstants(constants);
-        }
+        this.setConstants(constants);
     }
 
     setConstants(constants) {
-        if (constants instanceof Constants) {
+        if (constants != null) {
             this.constants = constants;
+        } else {
+            this.constants = new Constants();
         }
 
+        // Default constants for project management
         this.constants.set("progressRateMultiplier", 1.0);
         this.constants.set("techDebtImpactOnProgress", 1.0);
         this.constants.set("knowledgeGainMultiplier", 1.0);

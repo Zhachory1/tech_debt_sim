@@ -2,21 +2,46 @@
  * Codebase class - represents the technical foundation of the product
  */
 class Codebase {
-    constructor(initialQuality = 80) {
+    constructor(initialQuality = 80, constants = null) {
+        // Quality here is more of a doc health, tech debt level, and maintainability score
+        // 0 = unmaintainable, 100 = pristine. Affects failure probability and maintenance cost.
+        this.setConstants(constants);
+        
+        this.id = Math.random().toString(36).substr(2, 9);
         this.codeQuality = initialQuality; // 0-100 scale
         this.recentFeatureLaunches = []; // Array of features with launch dates
-        this.techDebtLevel = 20; // 0-100 scale (inverse of quality)
         this.failureProbability = this.calculateFailureProbability();
         this.maintenanceCost = 0;
-        this.featureLaunchImpactDecay = 0.8; // Each subsequent feature has less impact
     }
     
+    setConstants(constants) {
+        if (constants != null) {
+            this.constants = constants;
+        } else {
+            this.constants = new Constants();
+        }
+
+        // Default constants for codebase management
+        this.constants.set("maxFailureProbability", 0.1);
+        this.constants.set("minFailureProbability", 0.001);
+        this.constants.set("featureLaunchImpactDecay", 0.8);
+        this.constants.set("qualityFactorImpact", 0.05);
+        this.constants.set("codeQualityDecayRate", 0.1);
+        this.constants.set("techDebtImpactOnQuality", 0.3);
+        this.constants.set("featureImpactBase", 10);
+        this.constants.set("techDebtReductionEfficiency", 0.5);
+        this.constants.set("maintenanceCostFactor", 100); // Cost per point of quality degradation
+        this.constants.set("maxSeverity", 10);
+        this.constants.set("minSeverity", 2);
+    }
+
     calculateFailureProbability() {
         // Lower code quality = higher failure probability
         const qualityFactor = (100 - this.codeQuality) / 100;
-        const techDebtFactor = this.techDebtLevel / 100;
-        
-        return Math.min(0.3, (qualityFactor * 0.2) + (techDebtFactor * 0.1));
+
+        return Math.min(this.constants.get("maxFailureProbability"), 
+            (qualityFactor * this.constants.get("qualityFactorImpact")) + 
+                this.constants.get("minFailureProbability"));
     }
     
     addFeatureLaunch(project) {
@@ -36,7 +61,7 @@ class Codebase {
             const developer = project.assignedDeveloper;
             if (developer) {
                 const techDebtAdded = Math.max(0, (100 - developer.techDebtTolerance) / 10);
-                this.addTechDebt(techDebtAdded);
+                this.degradeCodeQuality(techDebtAdded);
             }
             
             return launch;
@@ -58,7 +83,7 @@ class Codebase {
         this.recentFeatureLaunches.forEach((feature, index) => {
             if (!feature.hasImpactedReputation) {
                 // Apply diminishing returns based on how many recent features there are
-                const diminishingFactor = Math.pow(this.featureLaunchImpactDecay, index);
+                const diminishingFactor = Math.pow(this.constants.get("featureLaunchImpactDecay"), index);
                 const impact = feature.impactValue * diminishingFactor;
                 totalImpact += impact;
                 feature.hasImpactedReputation = true;
@@ -71,22 +96,10 @@ class Codebase {
     processTechDebtReduction(project) {
         if (project.type === 'tech_debt') {
             const reduction = project.impactValue;
-            this.reduceTechDebt(reduction);
-            this.improveCodeQuality(reduction * 0.5);
+            this.improveCodeQuality(reduction * this.constants.get("techDebtReductionEfficiency"));
             return reduction;
         }
         return 0;
-    }
-    
-    addTechDebt(amount) {
-        this.techDebtLevel = Math.min(100, this.techDebtLevel + amount);
-        this.codeQuality = Math.max(0, this.codeQuality - (amount * 0.3));
-        this.failureProbability = this.calculateFailureProbability();
-    }
-    
-    reduceTechDebt(amount) {
-        this.techDebtLevel = Math.max(0, this.techDebtLevel - amount);
-        this.failureProbability = this.calculateFailureProbability();
     }
     
     improveCodeQuality(amount) {
@@ -96,14 +109,15 @@ class Codebase {
     
     degradeCodeQuality(amount) {
         this.codeQuality = Math.max(0, this.codeQuality - amount);
-        this.techDebtLevel = Math.min(100, this.techDebtLevel + (amount * 0.5));
         this.failureProbability = this.calculateFailureProbability();
     }
     
     checkForFailure() {
         // Random failure based on code quality and tech debt
         if (Math.random() < this.failureProbability) {
-            const severity = Math.random() * 10 + 5; // 5-15 severity
+            // Generate a failure event
+            const range = this.constants.get("maxSeverity") - this.constants.get("minSeverity");
+            const severity = Math.random() * range + this.constants.get("minSeverity");
             return {
                 severity: severity,
                 impact: severity * 2, // Impact on product reputation
@@ -126,8 +140,9 @@ class Codebase {
             'Memory leak causing crashes',
             'Configuration error in production'
         ];
-        
-        const severityLevel = severity > 12 ? 'Critical' : severity > 8 ? 'Major' : 'Minor';
+
+        const severityLevel = severity > this.constants.get("maxSeverity")*0.8 ? 'Critical' : 
+            severity > this.constants.get("maxSeverity")*0.5 ? 'Major' : 'Minor';
         const description = descriptions[Math.floor(Math.random() * descriptions.length)];
         
         return `${severityLevel}: ${description}`;
@@ -136,9 +151,9 @@ class Codebase {
     step() {
         // Natural code quality degradation over time
         this.degradeCodeQuality(0.1);
-        
-        // Update maintenance cost based on tech debt
-        this.maintenanceCost = this.techDebtLevel * 100; // Cost in dollars
+
+        // Update maintenance cost based on code quality
+        this.maintenanceCost = (100 - this.codeQuality) * this.constants.get("maintenanceCostFactor"); // Cost in dollars
         
         // Clean up old feature launches
         this.getReputationImpactFromFeatures();
@@ -147,7 +162,6 @@ class Codebase {
     getMetrics() {
         return {
             codeQuality: Math.round(this.codeQuality * 100) / 100,
-            techDebtLevel: Math.round(this.techDebtLevel * 100) / 100,
             failureProbability: Math.round(this.failureProbability * 10000) / 100, // As percentage
             maintenanceCost: Math.round(this.maintenanceCost),
             recentFeaturesCount: this.recentFeatureLaunches.length

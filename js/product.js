@@ -7,15 +7,17 @@ class Product {
         this.userCount = initialUserCount;
         this.revenue = 0;
         this.codebase = null; // Will be injected
-        if (constants != null && constants instanceof Constants) {
-            this.setConstants(constants);
-        }
+        this.setConstants(constants);
     }
 
     setConstants(constants) {
-        if (constants instanceof Constants) {
+        if (constants != null) {
             this.constants = constants;
+        } else {
+            this.constants = new Constants();
         }
+        
+        // Default constants for product management
         this.constants.set("reputationThreshold", 50);
         this.constants.set("reputationDecay", 0.02);
         this.constants.set("userGrowthRate", 0.1);
