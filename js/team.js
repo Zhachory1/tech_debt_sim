@@ -39,20 +39,20 @@ class EngineeringTeam {
 
     removeDeveloper(developerId) {
         const index = this.developers.findIndex(dev => dev.id === developerId);
-        if (index !== -1) {
-            const developer = this.developers[index];
-
-            // If developer was working on a project, move it back to todo
-            if (developer.currentProject) {
-                developer.currentProject.status = 'todo';
-                developer.currentProject.assignedDeveloper = null;
-                developer.currentProject.progress = 0;
-            }
-
-            this.developers.splice(index, 1);
-            return developer;
+        if (index === -1) {
+            return null;
         }
-        return null;
+        const developer = this.developers[index];
+
+        // If developer was working on a project, move it back to todo
+        if (developer.currentProject) {
+            developer.currentProject.status = 'todo';
+            developer.currentProject.assignedDeveloper = null;
+            developer.currentProject.progress = 0;
+        }
+
+        this.developers.splice(index, 1);
+        return developer;
     }
 
     addProject(project) {

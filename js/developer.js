@@ -29,26 +29,17 @@ class Developer {
 
         // Default constants for developer management
         this.constants.set("satisfactionDecay", 0.5);
-        this.constants.set("workloadImpact", 20);
-        this.constants.set("teamSizeImpact", 10);
-        this.constants.set("leaveThreshold", 30);
         this.constants.set("skillImpactOnProductivity", 0.4);
         this.constants.set("knowledgeImpactOnProductivity", 0.3);
         this.constants.set("satisfactionImpactOnProductivity", 0.3);
         this.constants.set("recentFailuresImpact", 0.5);
-        this.constants.set("timeWithCompanyImpact", 0.1);
-        this.constants.set("burnoutImpactOnSatisfaction", 0.4);
-        this.constants.set("workQualityImpactOnSatisfaction", 0.2);
         this.constants.set("teamSizeImpactOnSatisfaction", 0.2);
         this.constants.set("recentFailuresImpactOnSatisfaction", 0.3);
-        this.constants.set("techDebtImpactOnSatisfaction", 0.3);
         this.constants.set("workloadImpactOnSatisfaction", 0.3);
-        this.constants.set("timeWithCompanyImpactOnSatisfaction", 0.1);
-        this.constants.set("workQualityThreshold", 50);
-        this.constants.set("workQualityImpact", 0.4);
-        this.constants.set("techDebtToleranceImpact", 0.3);
-        this.constants.set("codeQualityImpactOnSatisfaction", 0.3);
-        this.constants.set("qualityImpactOnSatisfaction", 0.3);
+        this.constants.set("workloadImpactOnBurnout", 0.3);
+        this.constants.set("techDebtImpactOnSatisfaction_Negative", 0.5);
+        this.constants.set("techDebtImpactOnSatisfaction_Positive", 0.1);
+        this.constants.set("techDebtImpactOnBurnout", 0.2);
         this.constants.set("knowledgeGainMultiplier", 0.5);
         this.constants.set("burnoutRecoveryRate", 0.1);
         this.constants.set("satisfactionRecoveryRate", 0.05);
@@ -88,7 +79,6 @@ class Developer {
         if (!this.currentProject) return false;
 
         // Work progress is affected by codebase quality
-        const qualityFactor = Math.max(0.0, codebaseQuality / 100);
         const completed = this.currentProject.updateProgress(this);
 
         if (completed) {
@@ -98,10 +88,10 @@ class Developer {
 
         // Update satisfaction based on tech debt vs tolerance
         if (codebaseQuality < this.techDebtTolerance) {
-            this.satisfaction -= 0.5; // Frustrated by poor code quality
-            this.burnoutLevel += 0.3;
+            this.satisfaction -= this.constants.get("techDebtImpactOnSatisfaction_Negative"); // Frustrated by poor code quality
+            this.burnoutLevel += this.constants.get("techDebtImpactOnBurnout");
         } else {
-            this.satisfaction += 0.1; // Happy with good code quality
+            this.satisfaction += this.constants.get("techDebtImpactOnSatisfaction_Positive"); // Happy with good code quality
         }
 
         return false;
@@ -154,8 +144,8 @@ class Developer {
 
         // Apply various factors
         if (factors.workload > this.constants.get("workloadImpact")) {
-            this.satisfaction -= 1;
-            this.burnoutLevel += 0.5;
+            this.satisfaction -= this.constants.get("workloadImpactOnSatisfaction");
+            this.burnoutLevel += this.constants.get("workloadImpactOnBurnout");
         }
 
         if (factors.teamSize < 2) {

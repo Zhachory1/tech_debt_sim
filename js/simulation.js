@@ -81,9 +81,9 @@ class Simulation {
         this.step = 0;
         
         // Reset all components
-        this.product = new Product(1000, 50);
-        this.codebase = new Codebase(80);
-        this.engineeringTeam = new EngineeringTeam(3);
+        this.product = new Product(1000, 50, this.constants);
+        this.codebase = new Codebase(80, this.constants);
+        this.engineeringTeam = new EngineeringTeam(3, this.constants);
         this.leads = [];
         
         // Reconnect dependencies

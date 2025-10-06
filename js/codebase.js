@@ -45,28 +45,29 @@ class Codebase {
     }
     
     addFeatureLaunch(project) {
-        if (project.type === 'feature' && !project.hasAffectedReputation) {
-            const launch = {
-                projectId: project.id,
-                name: project.name,
-                impactValue: project.impactValue,
-                launchDate: Date.now(),
-                hasImpactedReputation: false
-            };
-            
-            this.recentFeatureLaunches.push(launch);
-            project.hasAffectedReputation = true;
-            
-            // Add tech debt based on developer's tolerance and rush
-            const developer = project.assignedDeveloper;
-            if (developer) {
-                const techDebtAdded = Math.max(0, (100 - developer.techDebtTolerance) / 10);
-                this.degradeCodeQuality(techDebtAdded);
-            }
-            
-            return launch;
+        if (project.type !== 'feature' || project.hasAffectedReputation) {
+            return null;
         }
-        return null;
+        
+        const launch = {
+            projectId: project.id,
+            name: project.name,
+            impactValue: project.impactValue,
+            launchDate: Date.now(),
+            hasImpactedReputation: false
+        };
+        
+        this.recentFeatureLaunches.push(launch);
+        project.hasAffectedReputation = true;
+        
+        // Add tech debt based on developer's tolerance and rush
+        const developer = project.assignedDeveloper;
+        if (developer) {
+            const techDebtAdded = Math.max(0, (100 - developer.techDebtTolerance) / 10);
+            this.degradeCodeQuality(techDebtAdded);
+        }
+        
+        return launch;
     }
     
     getReputationImpactFromFeatures() {
@@ -94,12 +95,12 @@ class Codebase {
     }
     
     processTechDebtReduction(project) {
-        if (project.type === 'tech_debt') {
-            const reduction = project.impactValue;
-            this.improveCodeQuality(reduction * this.constants.get("techDebtReductionEfficiency"));
-            return reduction;
+        if (project.type !== 'tech_debt') {
+            return 0;
         }
-        return 0;
+        const reduction = project.impactValue;
+        this.improveCodeQuality(reduction * this.constants.get("techDebtReductionEfficiency"));
+        return reduction;
     }
     
     improveCodeQuality(amount) {
@@ -114,17 +115,17 @@ class Codebase {
     
     checkForFailure() {
         // Random failure based on code quality and tech debt
-        if (Math.random() < this.failureProbability) {
-            // Generate a failure event
-            const range = this.constants.get("maxSeverity") - this.constants.get("minSeverity");
-            const severity = Math.random() * range + this.constants.get("minSeverity");
-            return {
-                severity: severity,
-                impact: severity * 2, // Impact on product reputation
-                description: this.generateFailureDescription(severity)
-            };
+        if (Math.random() > this.failureProbability) {
+            return null;
         }
-        return null;
+        // Generate a failure event
+        const range = this.constants.get("maxSeverity") - this.constants.get("minSeverity");
+        const severity = Math.random() * range + this.constants.get("minSeverity");
+        return {
+            severity: severity,
+            impact: severity * 2, // Impact on product reputation
+            description: this.generateFailureDescription(severity)
+        };
     }
     
     generateFailureDescription(severity) {
