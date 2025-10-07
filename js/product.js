@@ -80,22 +80,22 @@ class Product {
         let userChange = 0;
         
         // Reputation affects user count
-        if (this.reputation > this.constants.get("reputationThreshold", 50)) {
+        if (this.reputation > this.constants.get("reputationThreshold")) {
             // Good reputation increases users
-            const growth = (this.reputation - this.constants.get("reputationThreshold", 50)) * this.constants.get("userGrowthRate", 0.1);
+            const growth = (this.reputation - this.constants.get("reputationThreshold")) * this.constants.get("userGrowthRate");
             userChange += growth;
-        } else if (this.reputation < -this.constants.get("reputationThreshold", 50)) {
+        } else if (this.reputation < -this.constants.get("reputationThreshold")) {
             // Bad reputation decreases users
-            const decline = (this.reputation + this.constants.get("reputationThreshold", 50)) * this.constants.get("userGrowthRate", 0.1);
+            const decline = (this.reputation + this.constants.get("reputationThreshold")) * this.constants.get("userGrowthRate");
             userChange += decline; // This will be negative
         }
         
         // Natural user churn
-        const churn = this.userCount * this.constants.get("churnRate", 0.002);
+        const churn = this.userCount * this.constants.get("churnRate");
         userChange -= churn;
         
         // Market growth (small positive baseline)
-        const marketGrowth = this.userCount * this.constants.get("marketGrowthRate", 0.001);
+        const marketGrowth = this.userCount * this.constants.get("marketGrowthRate");
         userChange += marketGrowth;
         
         // Apply user change
@@ -111,12 +111,13 @@ class Product {
     
     processCompletedProjects(completedProjects) {
         if (!this.codebase) return;
-        
+
         completedProjects.forEach(project => {
-            if (project.type === 'feature') {
+            console.log(`Processing completed project: ${project.name} (Type: ${project.type}, Impact: ${project.impactValue})`);
+            if (project.type === PROJECT_TYPE.FEATURE) {
                 this.codebase.addFeatureLaunch(project);
-            } else if (project.type === 'tech_debt') {
-                this.codebase.processTechDebtReduction(project);
+            } else if (project.type === PROJECT_TYPE.TECH_DEBT) {
+                this.codebase.processTechDebtReduction(project)
             }
         });
     }
@@ -149,9 +150,9 @@ class Product {
     // Utility methods for analysis
     getUserGrowthRate() {
         if (this.reputation > this.reputationThreshold) {
-            return (this.reputation - this.reputationThreshold) * this.constants.get("userGrowthRate", 0.1);
+            return (this.reputation - this.reputationThreshold) * this.constants.get("userGrowthRate");
         } else if (this.reputation < -this.reputationThreshold) {
-            return (this.reputation + this.reputationThreshold) * this.constants.get("userGrowthRate", 0.1);
+            return (this.reputation + this.reputationThreshold) * this.constants.get("userGrowthRate");
         }
         return 0;
     }

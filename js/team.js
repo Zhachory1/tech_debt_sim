@@ -65,13 +65,13 @@ class EngineeringTeam {
 
     addFeatureProject(impactValue = null) {
         const impact = impactValue || (5 + Math.random() * 15);
-        const project = new Project('feature', impact);
+        const project = new Project(PROJECT_TYPE.FEATURE, impact);
         return this.addProject(project);
     }
 
     addTechDebtProject(impactValue = null) {
         const impact = impactValue || (5 + Math.random() * 10);
-        const project = new Project('tech_debt', impact);
+        const project = new Project(PROJECT_TYPE.TECH_DEBT, impact);
         return this.addProject(project);
     }
 
@@ -120,9 +120,11 @@ class EngineeringTeam {
         // TODO(zhach): Handle tech debt impact and reputation reward on progress
         this.developers.forEach(developer => {
             if (developer.workOnProject(codebaseQuality)) {
-                completedThisStep.push(developer.currentProject || developer.completedProjects[developer.completedProjects.length - 1]);
+                completedThisStep.push(developer.currentProject || 
+                    developer.completedProjects[developer.completedProjects.length - 1]);
             }
         });
+        console.log(`Completed projects this step: ${completedThisStep.map(p => p.name).join(", ")}`);
 
         // Move completed projects to completed list
         completedThisStep.forEach(project => {

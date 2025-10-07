@@ -1,8 +1,15 @@
 /**
  * Project class - represents both feature projects and tech debt reduction projects
  */
+
+const PROJECT_TYPE = {
+    FEATURE: 1,
+    TECH_DEBT: 2,
+    INFRASTRUCTURE: 3
+};
+
 class Project {
-    constructor(type = 'feature', impactValue = 10, name = '', constants = null) {
+    constructor(type = PROJECT_TYPE.FEATURE, impactValue = 10, name = '', constants = null) {
         this.id = Math.random().toString(36).substr(2, 9);
         this.type = type; // 'feature' or 'tech_debt'
         this.impactValue = impactValue; // How much reputation gain (feature) or tech debt reduction (tech_debt)
@@ -25,7 +32,7 @@ class Project {
         }
 
         // Default constants for project management
-        this.constants.set("progressRateMultiplier", 1.0);
+        this.constants.set("progressRateMultiplier", 5.0);
         this.constants.set("techDebtImpactOnProgress", 1.0);
         this.constants.set("knowledgeGainMultiplier", 1.0);
     }
@@ -57,13 +64,13 @@ class Project {
             'Architecture Cleanup'
         ];
 
-        const names = this.type === 'feature' ? featureNames : techDebtNames;
+        const names = this.type === PROJECT_TYPE.FEATURE ? featureNames : techDebtNames;
         return names[Math.floor(Math.random() * names.length)];
     }
 
     calculateEffort() {
         // Base effort calculation - can be modified based on project complexity
-        const baseEffort = this.type === 'feature' ?
+        const baseEffort = this.type === PROJECT_TYPE.FEATURE ?
             this.impactValue * 2 + Math.random() * 20 :
             this.impactValue * 1.5 + Math.random() * 15;
 
@@ -90,9 +97,9 @@ class Project {
     updateProgress(developer) {
         if (this.status === 'in_progress' && this.assignedDeveloper === developer) {
             // Progress depends on developer's skill and code knowledge
-            const progressRate = this.constants.get("progressRateMultiplier", 1.0) *
+            const progressRate = this.constants.get("progressRateMultiplier") *
                 (developer.baseSkill + developer.codeKnowledge) / 100;
-            const techDebtImpact = this.constants.get("techDebtImpactOnProgress", 1.0) *
+            const techDebtImpact = this.constants.get("techDebtImpactOnProgress") *
                 Math.max(0.1, 1 - (developer.techDebtTolerance / 100));
 
             this.progress += progressRate * techDebtImpact * (1 + Math.random() * 0.5);
@@ -111,7 +118,7 @@ class Project {
 
         // Developer gains code knowledge from completing projects
         if (this.assignedDeveloper) {
-            this.assignedDeveloper.gainCodeKnowledge(this.impactValue * this.constants.get("knowledgeGainMultiplier", 0.1));
+            this.assignedDeveloper.gainCodeKnowledge(this.impactValue * this.constants.get("knowledgeGainMultiplier"));
         }
     }
 

@@ -192,7 +192,7 @@ function drawProjectColumn(title, projects, x, y, w, h, bgColor) {
         const itemY = y + 40 + (index * 25);
 
         // Project type indicator
-        if (project.type === 'feature') {
+        if (project.type === PROJECT_TYPE.FEATURE) {
             fill(50, 150, 255);
         } else {
             fill(255, 100, 50);

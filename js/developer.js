@@ -28,7 +28,7 @@ class Developer {
         }
 
         // Default constants for developer management
-        this.constants.set("satisfactionDecay", 0.5);
+        this.constants.set("satisfactionDecay", 0.1);
         this.constants.set("skillImpactOnProductivity", 0.4);
         this.constants.set("knowledgeImpactOnProductivity", 0.3);
         this.constants.set("satisfactionImpactOnProductivity", 0.3);
@@ -82,6 +82,7 @@ class Developer {
         const completed = this.currentProject.updateProgress(this);
 
         if (completed) {
+            console.log(`Developer ${this.name} completed project: ${this.currentProject.name}`);
             this.completeProject();
             return true;
         }
@@ -101,8 +102,9 @@ class Developer {
         if (this.currentProject) {
             this.completedProjects.push(this.currentProject);
             this.gainExperience(this.currentProject.impactValue);
-            this.gainCodeKnowledge(this.currentProject.impactValue * this.constants.get("knowledgeGainMultiplier"));ßß
+            this.gainCodeKnowledge(this.currentProject.impactValue * this.constants.get("knowledgeGainMultiplier"));
             this.currentProject = null;
+            console.log(`Developer ${this.name} is now available for new projects.`);
         }
     }
 
@@ -127,7 +129,7 @@ class Developer {
         const suggestionChance = (this.codeKnowledge / 100) * 0.1; // 10% max chance per step
 
         if (Math.random() < suggestionChance) {
-            const projectType = Math.random() < 0.7 ? 'feature' : 'tech_debt';
+            const projectType = Math.random() < 0.7 ? PROJECT_TYPE.FEATURE : PROJECT_TYPE.TECH_DEBT;
             const impact = 5 + Math.random() * 15;
             const newProject = new Project(projectType, impact);
 
@@ -165,7 +167,7 @@ class Developer {
 
     shouldLeave() {
         // Probability of leaving based on satisfaction and burnout
-        const leaveProbability = (100 - this.satisfaction) / 1000 + this.burnoutLevel / 2000;
+        const leaveProbability = (100 - this.satisfaction) / 5000 + this.burnoutLevel / 10000;
         return Math.random() < leaveProbability;
     }
 
