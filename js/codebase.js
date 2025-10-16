@@ -27,10 +27,9 @@ class Codebase {
         this.constants.set("minFailureProbability", 0.001);
         this.constants.set("featureLaunchImpactDecay", 0.8);
         this.constants.set("qualityFactorImpact", 0.05);
-        this.constants.set("codeQualityDecayRate", 0.1);
-        this.constants.set("techDebtImpactOnQuality", 0.3);
+        this.constants.set("codeQualityDecayRate", 0.05);
         this.constants.set("featureImpactBase", 10);
-        this.constants.set("techDebtReductionEfficiency", 0.5);
+        this.constants.set("techDebtReductionEfficiency", 1.0);
         this.constants.set("maintenanceCostFactor", 100); // Cost per point of quality degradation
         this.constants.set("maxSeverity", 10);
         this.constants.set("minSeverity", 2);
@@ -98,7 +97,8 @@ class Codebase {
     }
     
     processTechDebtReduction(project) {
-        if (project.type !== 'tech_debt') {
+        if (project.type !== PROJECT_TYPE.TECH_DEBT) {
+            console.log("Project is not tech debt.");
             return 0;
         }
         const reduction = project.impactValue;
@@ -154,13 +154,10 @@ class Codebase {
     
     step() {
         // Natural code quality degradation over time
-        this.degradeCodeQuality(0.1);
+        this.degradeCodeQuality(this.constants.get("codeQualityDecayRate"));
 
         // Update maintenance cost based on code quality
         this.maintenanceCost = (100 - this.codeQuality) * this.constants.get("maintenanceCostFactor"); // Cost in dollars
-        
-        // Clean up old feature launches
-        this.getReputationImpactFromFeatures();
     }
     
     getMetrics() {
