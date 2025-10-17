@@ -68,13 +68,35 @@
             overflow: hidden;
         }
         
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+        .top-section {
+            display: flex;
+            gap: 20px;
             padding: 20px;
             background: #f8f9fa;
             border-bottom: 1px solid #dee2e6;
+        }
+        
+        .stats {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        
+        .chart-container {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
         }
         
         .stat-card {
@@ -123,34 +145,37 @@
         </div>
         
         <div class="simulation-container">
-            <div class="stats" id="stats">
-                <div class="stat-card">
-                    <div class="stat-title">Product Reputation</div>
-                    <div class="stat-value reputation" id="reputation">0</div>
+            <div class="top-section">
+                <div class="stats" id="stats">
+                    <div class="stat-card">
+                        <div class="stat-title">Product Reputation</div>
+                        <div class="stat-value reputation" id="reputation">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">User Count</div>
+                        <div class="stat-value users" id="userCount">1000</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Monthly Revenue</div>
+                        <div class="stat-value revenue" id="revenue">$0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Code Quality</div>
+                        <div class="stat-value quality" id="codeQuality">100</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Active Developers</div>
+                        <div class="stat-value developers" id="developerCount">3</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Ideas in Queue</div>
+                        <div class="stat-value" id="ideaQueue">0</div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-title">User Count</div>
-                    <div class="stat-value users" id="userCount">1000</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-title">Monthly Revenue</div>
-                    <div class="stat-value revenue" id="revenue">$0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-title">Code Quality</div>
-                    <div class="stat-value quality" id="codeQuality">100</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-title">Active Developers</div>
-                    <div class="stat-value developers" id="developerCount">3</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-title">Ideas in Queue</div>
-                    <div class="stat-value" id="ideaQueue">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-title">Todo Items</div>
-                    <div class="stat-value" id="todoList">0</div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Users & Revenue Over Time</div>
+                    <div id="chart-canvas"></div>
                 </div>
             </div>
             
