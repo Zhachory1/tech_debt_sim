@@ -18,12 +18,12 @@ class Product {
         }
         
         // Default constants for product management
-        this.constants.set("reputationThreshold", 50);
+        this.constants.set("reputationThreshold", 15);
         this.constants.set("reputationDecay", 0.02);
-        this.constants.set("userGrowthRate", 0.1);
+        // Max (or min) Rep would get us this rate of user increase.
+        this.constants.set("maxUserGrowthRate", 0.05); // 5%
         this.constants.set("revenuePerUser", 10);
-        this.constants.set("churnRate", 0.002);
-        this.constants.set("marketGrowthRate", 0.001);
+        this.constants.set("churnRate", 0.001); // 0.1%; takes in market growth and churn rate
     }
     
     setCodebase(codebase) {
@@ -65,9 +65,9 @@ class Product {
         
         // Natural reputation decay toward 0
         if (this.reputation > 0) {
-            this.reputation -= this.constants.get("reputationDecay", 0.02);
+            this.reputation -= this.constants.get("reputationDecay");
         } else if (this.reputation < 0) {
-            this.reputation += this.constants.get("reputationDecay", 0.02);
+            this.reputation += this.constants.get("reputationDecay");
         }
         
         // Clamp reputation to reasonable bounds
@@ -80,23 +80,13 @@ class Product {
         let userChange = 0;
         
         // Reputation affects user count
-        if (this.reputation > this.constants.get("reputationThreshold")) {
-            // Good reputation increases users
-            const growth = (this.reputation - this.constants.get("reputationThreshold")) * this.constants.get("userGrowthRate");
-            userChange += growth;
-        } else if (this.reputation < -this.constants.get("reputationThreshold")) {
-            // Bad reputation decreases users
-            const decline = (this.reputation + this.constants.get("reputationThreshold")) * this.constants.get("userGrowthRate");
-            userChange += decline; // This will be negative
-        }
+        // I want this to be a multiplicative affect instead of an additive one
+        const repGrowth = this.userCount * this.getUserGrowthRate()
+        userChange += repGrowth
         
         // Natural user churn
         const churn = this.userCount * this.constants.get("churnRate");
         userChange -= churn;
-        
-        // Market growth (small positive baseline)
-        const marketGrowth = this.userCount * this.constants.get("marketGrowthRate");
-        userChange += marketGrowth;
         
         // Apply user change
         this.userCount = Math.max(0, this.userCount + userChange);
@@ -142,17 +132,20 @@ class Product {
             reputation: Math.round(this.reputation * 100) / 100,
             userCount: Math.round(this.userCount),
             revenue: Math.round(this.revenue),
-            reputationThreshold: this.reputationThreshold,
-            churnRate: Math.round(this.churnRate * 10000) / 100 // As percentage
+            reputationThreshold: this.constants.get("reputationThreshold"),
+            churnRate: Math.round(this.churnRate * 100) / 100 // As percentage
         };
     }
     
     // Utility methods for analysis
     getUserGrowthRate() {
-        if (this.reputation > this.reputationThreshold) {
-            return (this.reputation - this.reputationThreshold) * this.constants.get("userGrowthRate");
-        } else if (this.reputation < -this.reputationThreshold) {
-            return (this.reputation + this.reputationThreshold) * this.constants.get("userGrowthRate");
+        const repThreshold = this.constants.get("reputationThreshold");
+        const maxGrowthRate = this.constants.get("maxUserGrowthRate");
+        const range = 100 - repThreshold;
+        if (this.reputation > repThreshold) {
+            return (this.reputation - repThreshold) / range * maxGrowthRate;
+        } else if (this.reputation < -repThreshold) {
+            return (this.reputation + repThreshold) / range * maxGrowthRate;
         }
         return 0;
     }

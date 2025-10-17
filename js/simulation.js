@@ -158,7 +158,7 @@ class Simulation {
     
     // Public methods for external control
     addDeveloper(name, baseSkill, techDebtTolerance) {
-        return this.engineeringTeam.addDeveloper(name, baseSkill, techDebtTolerance);
+        this.engineeringTeam.addDeveloper(name, baseSkill, techDebtTolerance);
     }
     
     addFeatureProject(impactValue) {

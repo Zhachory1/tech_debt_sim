@@ -28,11 +28,10 @@ class Developer {
         }
 
         // Default constants for developer management
-        this.constants.set("satisfactionDecay", 0.1);
+        this.constants.set("satisfactionDecay", 0.01);
         this.constants.set("skillImpactOnProductivity", 0.4);
         this.constants.set("knowledgeImpactOnProductivity", 0.3);
         this.constants.set("satisfactionImpactOnProductivity", 0.3);
-        this.constants.set("recentFailuresImpact", 0.5);
         this.constants.set("teamSizeImpactOnSatisfaction", 0.2);
         this.constants.set("recentFailuresImpactOnSatisfaction", 0.3);
         this.constants.set("workloadImpactOnSatisfaction", 0.3);
@@ -42,7 +41,7 @@ class Developer {
         this.constants.set("techDebtImpactOnBurnout", 0.2);
         this.constants.set("knowledgeGainMultiplier", 0.5);
         this.constants.set("burnoutRecoveryRate", 0.1);
-        this.constants.set("satisfactionRecoveryRate", 0.05);
+        this.constants.set("satisfactionRecoveryRate", 0.1);
     }
 
     generateName() {

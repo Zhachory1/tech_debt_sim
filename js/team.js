@@ -23,11 +23,6 @@ class EngineeringTeam {
         }
 
         // Default constants for team management
-        this.constants.set("baseSatisfaction", 70);
-        this.constants.set("satisfactionDecay", 0.5);
-        this.constants.set("workloadImpact", 20);
-        this.constants.set("teamSizeImpact", 10);
-        this.constants.set("leaveThreshold", 30);
         this.constants.set("projectSuggestionChance", 0.1);
     }
 
@@ -117,14 +112,15 @@ class EngineeringTeam {
     workOnProjects(codebaseQuality) {
         const completedThisStep = [];
 
-        // TODO(zhach): Handle tech debt impact and reputation reward on progress
         this.developers.forEach(developer => {
             if (developer.workOnProject(codebaseQuality)) {
                 completedThisStep.push(developer.currentProject || 
                     developer.completedProjects[developer.completedProjects.length - 1]);
             }
         });
-        console.log(`Completed projects this step: ${completedThisStep.map(p => p.name).join(", ")}`);
+        if (completedThisStep.length > 0) {
+            console.log(`Completed projects this step: ${completedThisStep.map(p => p.name).join(", ")}`);
+        }
 
         // Move completed projects to completed list
         completedThisStep.forEach(project => {

@@ -32,7 +32,7 @@ class Project {
         }
 
         // Default constants for project management
-        this.constants.set("progressRateMultiplier", 5.0);
+        this.constants.set("progressRateMultiplier", 10.0);
         this.constants.set("techDebtImpactOnProgress", 1.0);
         this.constants.set("knowledgeGainMultiplier", 1.0);
     }

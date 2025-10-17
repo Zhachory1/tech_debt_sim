@@ -12,7 +12,7 @@ class Codebase {
         this.recentFeatureLaunches = []; // Array of features with launch dates
         this.failureProbability = this.calculateFailureProbability();
         this.maintenanceCost = 0;
-        this.impactWindow = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+        this.impactWindow = 1 * 60 * 1000; // 1 minute in milliseconds
     }
     
     setConstants(constants) {
@@ -23,8 +23,8 @@ class Codebase {
         }
 
         // Default constants for codebase management
-        this.constants.set("maxFailureProbability", 0.1);
-        this.constants.set("minFailureProbability", 0.001);
+        this.constants.set("maxFailureProbability", 0.01);
+        this.constants.set("minFailureProbability", 0.0001);
         this.constants.set("featureLaunchImpactDecay", 0.8);
         this.constants.set("qualityFactorImpact", 0.05);
         this.constants.set("codeQualityDecayRate", 0.05);
@@ -46,8 +46,7 @@ class Codebase {
     
     addFeatureLaunch(project) {
         if (project.type !== PROJECT_TYPE.FEATURE || project.hasAffectedReputation) {
-            console.log("Project is not a feature or has already affected reputation.");
-            return null;
+            return;
         }
         console.log("Adding feature launch to codebase history:", project.name);
         
@@ -76,11 +75,9 @@ class Codebase {
         const currentTime = Date.now();
         
         // Clean up old features (older than impact window)
-        console.log("Length of recentFeatureLaunches before cleanup:", this.recentFeatureLaunches.length);
         this.recentFeatureLaunches = this.recentFeatureLaunches.filter(
             feature => (currentTime - feature.launchDate) < this.impactWindow
         );
-        console.log("Length of recentFeatureLaunches after cleanup:", this.recentFeatureLaunches.length);
 
         // Calculate diminishing returns for recent features
         this.recentFeatureLaunches.forEach((feature, index) => {
@@ -92,7 +89,9 @@ class Codebase {
                 feature.hasImpactedReputation = true;
             }
         });
-        console.log(`Codebase reputation impact from features: ${totalImpact}`);
+        if (totalImpact !== 0) {
+            console.log(`Codebase reputation impact from features: ${totalImpact}`);
+        }
         return totalImpact;
     }
     
