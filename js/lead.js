@@ -1,6 +1,5 @@
 /**
  * Lead class - placeholder for lead functionality
- * You mentioned you want to control how leads work, so this is a basic structure
  */
 class Lead {
     constructor(name = '', experienceLevel = 50) {

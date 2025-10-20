@@ -12,7 +12,7 @@ class Simulation {
         // Initialize all components
         this.constants = new Constants();
         this.product = new Product(1000, this.constants);
-        this.codebase = new Codebase(80, this.constants);
+        this.codebase = new Codebase(50, this.constants);
         this.engineeringTeam = new EngineeringTeam(3, this.constants);
         this.leads = []; // You can add leads as needed
         
@@ -25,7 +25,7 @@ class Simulation {
         // Statistics tracking
         this.stats = {
             history: [],
-            maxHistoryLength: 1000
+            maxHistoryLength: 250
         };
         
         // Add some initial projects

@@ -2,7 +2,7 @@
  * Codebase class - represents the technical foundation of the product
  */
 class Codebase {
-    constructor(initialQuality = 80, constants = null) {
+    constructor(initialQuality = 0, constants = null) {
         // Quality here is more of a doc health, tech debt level, and maintainability score
         // 0 = unmaintainable, 100 = pristine. Affects failure probability and maintenance cost.
         this.setConstants(constants);
@@ -26,7 +26,6 @@ class Codebase {
         this.constants.set("maxFailureProbability", 0.01);
         this.constants.set("minFailureProbability", 0.0001);
         this.constants.set("featureLaunchImpactDecay", 0.8);
-        this.constants.set("qualityFactorImpact", 0.05);
         this.constants.set("codeQualityDecayRate", 0.05);
         this.constants.set("featureImpactBase", 10);
         this.constants.set("techDebtReductionEfficiency", 1.0);
@@ -38,10 +37,10 @@ class Codebase {
     calculateFailureProbability() {
         // Lower code quality = higher failure probability
         const qualityFactor = (100 - this.codeQuality) / 100;
+        const failureProbabilityRange = this.constants.get("maxFailureProbability") - this.constants.get("minFailureProbability");
 
         return Math.min(this.constants.get("maxFailureProbability"), 
-            (qualityFactor * this.constants.get("qualityFactorImpact")) + 
-                this.constants.get("minFailureProbability"));
+            qualityFactor*failureProbabilityRange + this.constants.get("minFailureProbability"));
     }
     
     addFeatureLaunch(project) {
@@ -162,7 +161,7 @@ class Codebase {
     getMetrics() {
         return {
             codeQuality: Math.round(this.codeQuality * 100) / 100,
-            failureProbability: Math.round(this.failureProbability * 10000) / 100, // As percentage
+            failureProbability: Math.round(this.failureProbability * 10000) / 100, // As percentage, $.2f%
             maintenanceCost: Math.round(this.maintenanceCost),
             recentFeaturesCount: this.recentFeatureLaunches.length
         };

@@ -34,14 +34,15 @@ class Developer {
         this.constants.set("satisfactionImpactOnProductivity", 0.3);
         this.constants.set("teamSizeImpactOnSatisfaction", 0.2);
         this.constants.set("recentFailuresImpactOnSatisfaction", 0.3);
+        this.constants.set("workloadImpactThreshold", 0.7);
         this.constants.set("workloadImpactOnSatisfaction", 0.3);
         this.constants.set("workloadImpactOnBurnout", 0.3);
         this.constants.set("techDebtImpactOnSatisfaction_Negative", 0.5);
         this.constants.set("techDebtImpactOnSatisfaction_Positive", 0.1);
         this.constants.set("techDebtImpactOnBurnout", 0.2);
         this.constants.set("knowledgeGainMultiplier", 0.5);
-        this.constants.set("burnoutRecoveryRate", 0.1);
-        this.constants.set("satisfactionRecoveryRate", 0.1);
+        this.constants.set("burnoutRecoveryRate", 0.5);
+        this.constants.set("satisfactionRecoveryRate", 0.5);
     }
 
     generateName() {
@@ -140,21 +141,30 @@ class Developer {
     }
 
     updateSatisfaction(factors = {}) {
+        let satisfaction_sum = 0;
+        let burnout_sum = 0;
+
         // Base satisfaction decay
-        this.satisfaction -= this.constants.get("satisfactionDecay");
+        satisfaction_sum -= this.constants.get("satisfactionDecay");
 
         // Apply various factors
-        if (factors.workload > this.constants.get("workloadImpact")) {
-            this.satisfaction -= this.constants.get("workloadImpactOnSatisfaction");
-            this.burnoutLevel += this.constants.get("workloadImpactOnBurnout");
-        }
-
-        if (factors.teamSize < 2) {
-            this.satisfaction -= this.constants.get("teamSizeImpactOnSatisfaction"); // Lonely developer
+        if (factors.workload > this.constants.get("workloadImpactThreshold")) {
+            satisfaction_sum -= this.constants.get("workloadImpactOnSatisfaction");
+            burnout_sum += this.constants.get("workloadImpactOnBurnout");
         }
 
         if (factors.recentFailures > 0) {
-            this.satisfaction -= factors.recentFailures * this.constants.get("recentFailuresImpactOnSatisfaction");
+            satisfaction_sum -= factors.recentFailures * this.constants.get("recentFailuresImpactOnSatisfaction");
+        }
+
+        if (factors.codebaseQuality < this.techDebtTolerance) {
+            satisfaction_sum -= this.constants.get("techDebtImpactOnSatisfaction_Negative");
+        } else {
+            satisfaction_sum += this.constants.get("techDebtImpactOnSatisfaction_Positive");
+        }
+
+        if (factors.teamSize < 3) {
+            satisfaction_sum -= this.constants.get("teamSizeImpactOnSatisfaction");
         }
 
         // Clamp values
