@@ -2,6 +2,7 @@
     Base Constants class to manage game constants
     Allows loading from JSON and accessing constants by key
 */
+
 class Constants {
     constructor(constants) {
         this.constants = constants || {};

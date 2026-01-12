@@ -26,19 +26,19 @@ class Lead {
         return names[Math.floor(Math.random() * names.length)];
     }
     
-    // Placeholder methods - you can implement the logic as needed
+    // Placeholder methods
     reviewProject(project) {
-        // TODO: Implement your lead approval logic here
+        // TODO: Implement lead approval logic here
         return { approved: false, feedback: "Lead review not yet implemented" };
     }
     
     makeStrategicDecision(options) {
-        // TODO: Implement your strategic decision making logic here
+        // TODO: Implement strategic decision making logic here
         return null;
     }
     
     prioritizeProjects(projects) {
-        // TODO: Implement your project prioritization logic here
+        // TODO: Implement project prioritization logic here
         return projects;
     }
     
