@@ -167,6 +167,9 @@ class Developer {
             satisfaction_sum -= this.constants.get("teamSizeImpactOnSatisfaction");
         }
 
+        this.satisfaction += satisfaction_sum;
+        this.burnoutLevel += burnout_sum;
+
         // Clamp values
         this.satisfaction = Math.max(0, Math.min(100, this.satisfaction));
         this.burnoutLevel = Math.max(0, Math.min(100, this.burnoutLevel));

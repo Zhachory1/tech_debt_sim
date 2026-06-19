@@ -133,7 +133,7 @@ class Product {
             userCount: Math.round(this.userCount),
             revenue: Math.round(this.revenue),
             reputationThreshold: this.constants.get("reputationThreshold"),
-            churnRate: Math.round(this.churnRate * 100) / 100 // As percentage
+            churnRate: Math.round(this.constants.get("churnRate") * 10000) / 100 // As percentage
         };
     }
     
