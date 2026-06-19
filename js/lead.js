@@ -2,8 +2,9 @@
  * Lead class - placeholder for lead functionality
  */
 class Lead {
-    constructor(name = '', experienceLevel = 50) {
-        this.id = Math.random().toString(36).substr(2, 9);
+    constructor(name = '', experienceLevel = 50, constants = null) {
+        this.setConstants(constants);
+        this.id = this.constants.random().toString(36).substr(2, 9);
         this.name = name || this.generateName();
         this.experienceLevel = experienceLevel; // 0-100
         this.approvalAuthority = true;
@@ -16,6 +17,14 @@ class Lead {
             timeHorizon: 'medium' // 'short', 'medium', 'long'
         };
     }
+
+    setConstants(constants) {
+        if (constants != null) {
+            this.constants = constants;
+        } else {
+            this.constants = new Constants();
+        }
+    }
     
     generateName() {
         const names = [
@@ -23,7 +32,7 @@ class Lead {
             'Lisa Thompson', 'John Martinez', 'Angela Davis', 'Robert Lee',
             'Jennifer Wilson', 'Chris Anderson', 'Maria Garcia', 'Kevin Brown'
         ];
-        return names[Math.floor(Math.random() * names.length)];
+        return names[Math.floor(this.constants.random() * names.length)];
     }
     
     // Placeholder methods

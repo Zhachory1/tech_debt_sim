@@ -7,6 +7,7 @@ class EngineeringTeam {
         this.ideaQueue = [];
         this.todoList = [];
         this.completedProjects = [];
+        this.leads = [];
         this.setConstants(constants);
 
         // Create initial developers
@@ -59,15 +60,19 @@ class EngineeringTeam {
     }
 
     addFeatureProject(impactValue = null) {
-        const impact = impactValue || (5 + Math.random() * 15);
-        const project = new Project(PROJECT_TYPE.FEATURE, impact);
+        const impact = impactValue || (5 + this.constants.random() * 15);
+        const project = new Project(PROJECT_TYPE.FEATURE, impact, '', this.constants);
         return this.addProject(project);
     }
 
     addTechDebtProject(impactValue = null) {
-        const impact = impactValue || (5 + Math.random() * 10);
-        const project = new Project(PROJECT_TYPE.TECH_DEBT, impact);
+        const impact = impactValue || (5 + this.constants.random() * 10);
+        const project = new Project(PROJECT_TYPE.TECH_DEBT, impact, '', this.constants);
         return this.addProject(project);
+    }
+
+    setLeads(leads) {
+        this.leads = leads || [];
     }
 
     approveProject(projectId) {
@@ -203,16 +208,14 @@ class EngineeringTeam {
     }
 
     hasNoLeads() {
-        // This will be used when Lead class is implemented
-        // For now, assume no leads so projects auto-approve
-        return true;
+        return this.leads.length === 0;
     }
 
     autoApproveProjects() {
         // Auto-approve projects when there are no leads
         const unapprovedProjects = this.ideaQueue.filter(p => !p.isApproved());
         unapprovedProjects.forEach(project => {
-            if (Math.random() < this.constants.get("projectSuggestionChance")) { // 10% chance per step to auto-approve
+            if (this.constants.random() < this.constants.get("projectSuggestionChance")) { // 10% chance per step to auto-approve
                 this.approveProject(project.id);
             }
         });

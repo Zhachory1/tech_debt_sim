@@ -7,7 +7,7 @@ class Codebase {
         // 0 = unmaintainable, 100 = pristine. Affects failure probability and maintenance cost.
         this.setConstants(constants);
         
-        this.id = Math.random().toString(36).substr(2, 9);
+        this.id = this.constants.random().toString(36).substr(2, 9);
         this.codeQuality = initialQuality; // 0-100 scale
         this.recentFeatureLaunches = []; // Array of features with launch dates
         this.failureProbability = this.calculateFailureProbability();
@@ -116,12 +116,12 @@ class Codebase {
     
     checkForFailure() {
         // Random failure based on code quality and tech debt
-        if (Math.random() > this.failureProbability) {
+        if (this.constants.random() > this.failureProbability) {
             return null;
         }
         // Generate a failure event
         const range = this.constants.get("maxSeverity") - this.constants.get("minSeverity");
-        const severity = Math.random() * range + this.constants.get("minSeverity");
+        const severity = this.constants.random() * range + this.constants.get("minSeverity");
         return {
             severity: severity,
             impact: severity * 2, // Impact on product reputation
@@ -145,7 +145,7 @@ class Codebase {
 
         const severityLevel = severity > this.constants.get("maxSeverity")*0.8 ? 'Critical' : 
             severity > this.constants.get("maxSeverity")*0.5 ? 'Major' : 'Minor';
-        const description = descriptions[Math.floor(Math.random() * descriptions.length)];
+        const description = descriptions[Math.floor(this.constants.random() * descriptions.length)];
         
         return `${severityLevel}: ${description}`;
     }

@@ -10,7 +10,8 @@ const PROJECT_TYPE = {
 
 class Project {
     constructor(type = PROJECT_TYPE.FEATURE, impactValue = 10, name = '', constants = null) {
-        this.id = Math.random().toString(36).substr(2, 9);
+        this.setConstants(constants);
+        this.id = this.constants.random().toString(36).substr(2, 9);
         this.type = type; // 'feature' or 'tech_debt'
         this.impactValue = impactValue; // How much reputation gain (feature) or tech debt reduction (tech_debt)
         this.name = name || this.generateName();
@@ -21,7 +22,6 @@ class Project {
         this.approved = false;
         this.createdAt = Date.now();
         this.hasAffectedReputation = false; // To ensure single reputation impact
-        this.setConstants(constants);
     }
 
     setConstants(constants) {
@@ -65,14 +65,14 @@ class Project {
         ];
 
         const names = this.type === PROJECT_TYPE.FEATURE ? featureNames : techDebtNames;
-        return names[Math.floor(Math.random() * names.length)];
+        return names[Math.floor(this.constants.random() * names.length)];
     }
 
     calculateEffort() {
         // Base effort calculation - can be modified based on project complexity
         const baseEffort = this.type === PROJECT_TYPE.FEATURE ?
-            this.impactValue * 2 + Math.random() * 20 :
-            this.impactValue * 1.5 + Math.random() * 15;
+            this.impactValue * 2 + this.constants.random() * 20 :
+            this.impactValue * 1.5 + this.constants.random() * 15;
 
         return Math.max(10, baseEffort);
     }
@@ -102,7 +102,7 @@ class Project {
             const techDebtImpact = this.constants.get("techDebtImpactOnProgress") *
                 Math.max(0.1, 1 - (developer.techDebtTolerance / 100));
 
-            this.progress += progressRate * techDebtImpact * (1 + Math.random() * 0.5);
+            this.progress += progressRate * techDebtImpact * (1 + this.constants.random() * 0.5);
 
             if (this.progress >= 100) {
                 this.complete();

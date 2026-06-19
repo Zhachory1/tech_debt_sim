@@ -6,6 +6,19 @@
 class Constants {
     constructor(constants) {
         this.constants = constants || {};
+        this._random = Math.random;
+    }
+
+    setSeed(seed) {
+        let state = Number(seed) >>> 0;
+        this._random = () => {
+            state = (1664525 * state + 1013904223) >>> 0;
+            return state / 4294967296;
+        };
+    }
+
+    random() {
+        return this._random();
     }
 
     get(key, defaultValue = null) {
