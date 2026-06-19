@@ -4,18 +4,18 @@
 class Developer {
     constructor(name = '', baseSkill = null, techDebtTolerance = null, constants = null) {
         this.setConstants(constants);
-        this.id = Math.random().toString(36).substr(2, 9);
+        this.id = this.constants.random().toString(36).substr(2, 9);
         this.name = name || this.generateName();
-        this.baseSkill = baseSkill ?? (20 + Math.random() * 60); // 20-80 skill level
-        this.codeKnowledge = 10 + Math.random() * 20; // Starts between 10-30, grows over time
-        this.techDebtTolerance = techDebtTolerance ?? (20 + Math.random() * 60); // 20-80 tolerance
+        this.baseSkill = baseSkill ?? (20 + this.constants.random() * 60); // 20-80 skill level
+        this.codeKnowledge = 10 + this.constants.random() * 20; // Starts between 10-30, grows over time
+        this.techDebtTolerance = techDebtTolerance ?? (20 + this.constants.random() * 60); // 20-80 tolerance
         this.currentProject = null;
         this.completedProjects = [];
 
         this.productivity = this.calculateProductivity();
         this.experienceGained = 0;
 
-        this.satisfaction = 75 + Math.random() * 20; // Starts between 75-95
+        this.satisfaction = 75 + this.constants.random() * 20; // Starts between 75-95
         this.burnoutLevel = 0; // 0-100, higher means more likely to leave
         this.timeWithCompany = 0; // Simulation steps
     }
@@ -52,7 +52,7 @@ class Developer {
             'Sage Anderson', 'River Thompson', 'Dakota Lee', 'Poop White',
             'Phoenix Clark', 'Rowan Lewis', 'Ember Rodriguez', 'Sage Walker'
         ];
-        return names[Math.floor(Math.random() * names.length)];
+        return names[Math.floor(this.constants.random() * names.length)];
     }
 
     calculateProductivity() {
@@ -128,10 +128,10 @@ class Developer {
         // Higher code knowledge means more likely to suggest projects
         const suggestionChance = (this.codeKnowledge / 100) * 0.1; // 10% max chance per step
 
-        if (Math.random() < suggestionChance) {
-            const projectType = Math.random() < 0.7 ? PROJECT_TYPE.FEATURE : PROJECT_TYPE.TECH_DEBT;
-            const impact = 5 + Math.random() * 15;
-            const newProject = new Project(projectType, impact);
+        if (this.constants.random() < suggestionChance) {
+            const projectType = this.constants.random() < 0.7 ? PROJECT_TYPE.FEATURE : PROJECT_TYPE.TECH_DEBT;
+            const impact = 5 + this.constants.random() * 15;
+            const newProject = new Project(projectType, impact, '', this.constants);
 
             ideaQueue.push(newProject);
             return newProject;
@@ -177,7 +177,7 @@ class Developer {
     shouldLeave() {
         // Probability of leaving based on satisfaction and burnout
         const leaveProbability = (100 - this.satisfaction) / 5000 + this.burnoutLevel / 10000;
-        return Math.random() < leaveProbability;
+        return this.constants.random() < leaveProbability;
     }
 
     step() {

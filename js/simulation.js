@@ -2,7 +2,7 @@
  * Simulation class - orchestrates the entire tech debt simulation
  */
 class Simulation {
-    constructor() {
+    constructor(options = {}) {
         this.isRunning = false;
         this.isPaused = false;
         this.step = 0;
@@ -10,14 +10,19 @@ class Simulation {
         this.stepsPerSecond = 2;
         
         // Initialize all components
+        this.seed = options.seed ?? null;
         this.constants = new Constants();
+        if (this.seed !== null) {
+            this.constants.setSeed(this.seed);
+        }
         this.product = new Product(1000, this.constants);
         this.codebase = new Codebase(50, this.constants);
         this.engineeringTeam = new EngineeringTeam(3, this.constants);
-        this.leads = []; // You can add leads as needed
+        this.leads = [];
         
         // Connect dependencies
         this.product.setCodebase(this.codebase);
+        this.engineeringTeam.setLeads(this.leads);
         
         // Event listeners
         this.eventListeners = [];
@@ -81,13 +86,18 @@ class Simulation {
         this.step = 0;
         
         // Reset all components
-        this.product = new Product(1000, 50, this.constants);
-        this.codebase = new Codebase(80, this.constants);
+        this.constants = new Constants();
+        if (this.seed !== null) {
+            this.constants.setSeed(this.seed);
+        }
+        this.product = new Product(1000, this.constants);
+        this.codebase = new Codebase(50, this.constants);
         this.engineeringTeam = new EngineeringTeam(3, this.constants);
         this.leads = [];
         
         // Reconnect dependencies
         this.product.setCodebase(this.codebase);
+        this.engineeringTeam.setLeads(this.leads);
         
         // Clear statistics
         this.stats.history = [];
@@ -172,6 +182,7 @@ class Simulation {
     addLead(lead) {
         if (lead instanceof Lead) {
             this.leads.push(lead);
+            this.engineeringTeam.setLeads(this.leads);
             return true;
         }
         return false;
