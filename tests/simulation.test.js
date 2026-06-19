@@ -15,7 +15,9 @@ const files = [
 
 const source = `${files.map((file) => fs.readFileSync(file, 'utf8')).join('\n')}
 this.Constants = Constants;
+this.Developer = Developer;
 this.EngineeringTeam = EngineeringTeam;
+this.Product = Product;
 this.Simulation = Simulation;
 `;
 const context = { console };
@@ -72,5 +74,16 @@ teamWithoutLead.addFeatureProject(10);
 teamWithoutLead.step();
 assert.strictEqual(teamWithoutLead.ideaQueue.length, 0);
 assert.strictEqual(teamWithoutLead.todoList.length, 1);
+
+const product = new context.Product(1000, new context.Constants());
+assert.strictEqual(product.getMetrics().churnRate, 0.1);
+assert(!Number.isNaN(product.getMetrics().churnRate));
+
+const developer = new context.Developer('Test Dev', 50, 80, new context.Constants());
+const startingSatisfaction = developer.satisfaction;
+const startingBurnout = developer.burnoutLevel;
+developer.updateSatisfaction({ workload: 1, recentFailures: 1, codebaseQuality: 10, teamSize: 1 });
+assert(developer.satisfaction < startingSatisfaction);
+assert(developer.burnoutLevel > startingBurnout);
 
 console.log('simulation tests passed');
