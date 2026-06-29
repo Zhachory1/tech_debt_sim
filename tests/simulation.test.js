@@ -75,6 +75,14 @@ teamWithoutLead.step();
 assert.strictEqual(teamWithoutLead.ideaQueue.length, 0);
 assert.strictEqual(teamWithoutLead.todoList.length, 1);
 
+const resetSimulation = new context.Simulation({ seed: 99 });
+resetSimulation.runStep();
+resetSimulation.reset();
+assert.strictEqual(resetSimulation.step, 0);
+resetSimulation.runStep();
+assert.strictEqual(resetSimulation.step, 1);
+assert.strictEqual(resetSimulation.stats.history.length, 1);
+
 const product = new context.Product(1000, new context.Constants());
 assert.strictEqual(product.getMetrics().churnRate, 0.1);
 assert(!Number.isNaN(product.getMetrics().churnRate));
