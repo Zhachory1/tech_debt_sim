@@ -125,6 +125,24 @@
         .revenue { color: #ffc107; }
         .quality { color: #dc3545; }
         .developers { color: #6f42c1; }
+
+        .developer-details {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            color: #333;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+        }
+
+        .developer-details h2 {
+            font-size: 18px;
+            margin: 0 0 10px;
+        }
+
+        .developer-details p {
+            margin: 4px 0;
+        }
     </style>
 </head>
 <body>
@@ -142,6 +160,11 @@
                 <button id="addProjectBtn">Add Feature Project</button>
                 <button id="addTechDebtBtn">Add Tech Debt Project</button>
             </div>
+        </div>
+
+        <div class="developer-details" id="developerDetails">
+            <h2>Developer Details</h2>
+            <p>Click a working developer in the Engineering Team panel to inspect satisfaction, burnout, skill, knowledge, and current project.</p>
         </div>
         
         <div class="simulation-container">
