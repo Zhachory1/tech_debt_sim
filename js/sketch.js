@@ -8,6 +8,8 @@ let chartCanvas;
 
 // UI elements
 let startBtn, pauseBtn, resetBtn, addDevBtn, addProjectBtn, addTechDebtBtn;
+let applyConstantsBtn;
+let constantInputs = {};
 
 function setup() {
     // Create main canvas and attach to container
@@ -385,6 +387,7 @@ function setupSimulationEvents() {
     simulation.addEventListener('simulationReset', () => {
         startBtn.disabled = false;
         pauseBtn.disabled = true;
+        syncConstantControls();
         updateUI();
     });
 }
@@ -396,6 +399,17 @@ function setupUIControls() {
     addDevBtn = document.getElementById('addDevBtn');
     addProjectBtn = document.getElementById('addProjectBtn');
     addTechDebtBtn = document.getElementById('addTechDebtBtn');
+    applyConstantsBtn = document.getElementById('applyConstantsBtn');
+    constantInputs = {
+        reputationDecay: document.getElementById('reputationDecayInput'),
+        maxUserGrowthRate: document.getElementById('maxUserGrowthRateInput'),
+        churnRate: document.getElementById('churnRateInput'),
+        codeQualityDecayRate: document.getElementById('codeQualityDecayRateInput'),
+        techDebtReductionEfficiency: document.getElementById('techDebtReductionEfficiencyInput'),
+        projectSuggestionChance: document.getElementById('projectSuggestionChanceInput')
+    };
+
+    syncConstantControls();
 
     startBtn.addEventListener('click', () => {
         if (simulation.isPaused) {
@@ -427,6 +441,35 @@ function setupUIControls() {
         simulation.addTechDebtProject();
         updateUI();
     });
+
+    applyConstantsBtn.addEventListener('click', () => {
+        applyConstantControls();
+        updateUI();
+    });
+}
+
+function syncConstantControls() {
+    if (!simulation || !constantInputs) return;
+
+    Object.entries(constantInputs).forEach(([key, input]) => {
+        if (input) {
+            input.value = simulation.constants.get(key);
+        }
+    });
+}
+
+function applyConstantControls() {
+    if (!simulation || !constantInputs) return;
+
+    Object.entries(constantInputs).forEach(([key, input]) => {
+        const value = Number(input.value);
+        if (Number.isFinite(value)) {
+            simulation.constants.set(key, value);
+        }
+    });
+
+    simulation.codebase.failureProbability = simulation.codebase.calculateFailureProbability();
+    simulation.product.updateRevenue();
 }
 
 function updateUI() {
