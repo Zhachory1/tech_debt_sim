@@ -5,6 +5,8 @@
 let simulation;
 let canvas;
 let chartCanvas;
+let developerHitAreas = [];
+let selectedDeveloperId = null;
 
 // UI elements
 let startBtn, pauseBtn, resetBtn, addDevBtn, addProjectBtn, addTechDebtBtn;
@@ -43,6 +45,7 @@ function draw() {
 
 function drawSimulation() {
     const metrics = simulation.getCurrentMetrics();
+    developerHitAreas = [];
 
     // Draw main visualization areas
     drawProductMetrics(metrics.product, 50, 50, 300, 200);
@@ -143,6 +146,41 @@ function drawTeamStatus(team, x, y, w, h) {
     text(`Developers: ${team.developerCount}`, x + 20, satY + 35);
     text(`Avg Skill: ${Math.round(team.averageSkill)}`, x + 20, satY + 55);
     text(`Workload: ${Math.round(team.averageWorkload * 100)}%`, x + 20, satY + 75);
+
+    const workingDevelopers = simulation.engineeringTeam.developers.filter(dev => dev.currentProject);
+    const listY = satY + 105;
+    textStyle(BOLD);
+    text('Working developers (click):', x + 20, listY);
+    textStyle(NORMAL);
+
+    if (workingDevelopers.length === 0) {
+        text('None assigned', x + 20, listY + 18);
+        return;
+    }
+
+    workingDevelopers.slice(0, 3).forEach((developer, index) => {
+        const itemY = listY + 18 + (index * 18);
+        const isSelected = developer.id === selectedDeveloperId;
+        fill(isSelected ? color(220, 235, 255) : color(245));
+        stroke(isSelected ? color(0, 122, 204) : color(200));
+        rect(x + 18, itemY - 2, w - 36, 16);
+        fill(0);
+        noStroke();
+        text(`${developer.name}: ${developer.currentProject.name}`, x + 24, itemY);
+        developerHitAreas.push({ x: x + 18, y: itemY - 2, w: w - 36, h: 16, developerId: developer.id });
+    });
+}
+
+function mousePressed() {
+    const hitArea = developerHitAreas.find(area =>
+        mouseX >= area.x && mouseX <= area.x + area.w &&
+        mouseY >= area.y && mouseY <= area.y + area.h
+    );
+
+    if (hitArea) {
+        selectedDeveloperId = hitArea.developerId;
+        updateDeveloperDetails();
+    }
 }
 
 function drawProjectFlow(x, y, w, h) {
@@ -484,4 +522,38 @@ function updateUI() {
     document.getElementById('codeQuality').textContent = Math.round(metrics.codebase.codeQuality);
     document.getElementById('developerCount').textContent = metrics.team.developerCount;
     document.getElementById('ideaQueue').textContent = metrics.team.ideaQueueLength;
+    updateDeveloperDetails();
+}
+
+function updateDeveloperDetails() {
+    const details = document.getElementById('developerDetails');
+    if (!details || !simulation) return;
+
+    const developer = simulation.engineeringTeam.developers.find(dev => dev.id === selectedDeveloperId);
+    if (!developer) {
+        selectedDeveloperId = null;
+        details.innerHTML = '<h2>Developer Details</h2><p>Click a working developer in the Engineering Team panel to inspect satisfaction, burnout, skill, knowledge, and current project.</p>';
+        return;
+    }
+
+    const projectName = developer.currentProject ? developer.currentProject.name : 'Available';
+    details.innerHTML = `
+        <h2>${escapeHtml(developer.name)}</h2>
+        <p><strong>Current project:</strong> ${escapeHtml(projectName)}</p>
+        <p><strong>Satisfaction:</strong> ${Math.round(developer.satisfaction * 10) / 10}</p>
+        <p><strong>Burnout:</strong> ${Math.round(developer.burnoutLevel * 10) / 10}</p>
+        <p><strong>Base skill:</strong> ${Math.round(developer.baseSkill)}</p>
+        <p><strong>Code knowledge:</strong> ${Math.round(developer.codeKnowledge)}</p>
+        <p><strong>Tech debt tolerance:</strong> ${Math.round(developer.techDebtTolerance)}</p>
+        <p><strong>Productivity:</strong> ${Math.round(developer.productivity * 100)}%</p>
+    `;
+}
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }

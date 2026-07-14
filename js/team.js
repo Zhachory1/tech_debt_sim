@@ -24,7 +24,7 @@ class EngineeringTeam {
         }
 
         // Default constants for team management
-        this.constants.set("projectSuggestionChance", 0.1);
+        this.constants.set("projectSuggestionChance", 0.15);
     }
 
     addDeveloper(name = null, baseSkill = null, techDebtTolerance = null) {
