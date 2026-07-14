@@ -94,4 +94,10 @@ developer.updateSatisfaction({ workload: 1, recentFailures: 1, codebaseQuality: 
 assert(developer.satisfaction < startingSatisfaction);
 assert(developer.burnoutLevel > startingBurnout);
 
+const cappedProduct = new context.Product(7999999990, new context.Constants());
+cappedProduct.reputation = 100;
+cappedProduct.updateUserCount();
+assert.strictEqual(cappedProduct.userCount, cappedProduct.constants.get('maxUserCount'));
+assert.strictEqual(cappedProduct.getMetrics().maxUserCount, 8000000000);
+
 console.log('simulation tests passed');
