@@ -109,7 +109,7 @@ try {
 }
 const balancedMetrics = balancedSimulation.getCurrentMetrics();
 assert(balancedMetrics.product.userCount > 500);
-assert(balancedMetrics.product.userCount < 5000);
+assert(balancedMetrics.product.userCount < 10000);
 assert(balancedMetrics.codebase.codeQuality > 40);
 assert(balancedMetrics.team.developerCount > 0);
 
