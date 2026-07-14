@@ -18,6 +18,9 @@ this.Constants = Constants;
 this.Developer = Developer;
 this.EngineeringTeam = EngineeringTeam;
 this.Product = Product;
+this.Codebase = Codebase;
+this.Project = Project;
+this.PROJECT_TYPE = PROJECT_TYPE;
 this.Simulation = Simulation;
 `;
 const context = { console };
@@ -93,5 +96,15 @@ const startingBurnout = developer.burnoutLevel;
 developer.updateSatisfaction({ workload: 1, recentFailures: 1, codebaseQuality: 10, teamSize: 1 });
 assert(developer.satisfaction < startingSatisfaction);
 assert(developer.burnoutLevel > startingBurnout);
+
+const featureImpactConstants = new context.Constants();
+featureImpactConstants.setSeed(13);
+const codebase = new context.Codebase(80, featureImpactConstants);
+const completedFeatureA = new context.Project(context.PROJECT_TYPE.FEATURE, 10, 'Completed Feature A', featureImpactConstants);
+const completedFeatureB = new context.Project(context.PROJECT_TYPE.FEATURE, 10, 'Completed Feature B', featureImpactConstants);
+codebase.addFeatureLaunch(completedFeatureA).hasImpactedReputation = true;
+codebase.addFeatureLaunch(completedFeatureB).hasImpactedReputation = true;
+codebase.addFeatureLaunch(new context.Project(context.PROJECT_TYPE.FEATURE, 10, 'New Feature', featureImpactConstants));
+assert.strictEqual(codebase.getReputationImpactFromFeatures(), 10);
 
 console.log('simulation tests passed');

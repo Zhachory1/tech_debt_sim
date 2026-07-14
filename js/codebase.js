@@ -78,14 +78,14 @@ class Codebase {
             feature => (currentTime - feature.launchDate) < this.impactWindow
         );
 
-        // Calculate diminishing returns for recent features
-        this.recentFeatureLaunches.forEach((feature, index) => {
+        let pendingFeatureIndex = 0;
+        this.recentFeatureLaunches.forEach(feature => {
             if (!feature.hasImpactedReputation) {
-                // Apply diminishing returns based on how many recent features there are
-                const diminishingFactor = Math.pow(this.constants.get("featureLaunchImpactDecay"), index);
+                const diminishingFactor = Math.pow(this.constants.get("featureLaunchImpactDecay"), pendingFeatureIndex);
                 const impact = feature.impactValue * diminishingFactor;
                 totalImpact += impact;
                 feature.hasImpactedReputation = true;
+                pendingFeatureIndex++;
             }
         });
         if (totalImpact !== 0) {
