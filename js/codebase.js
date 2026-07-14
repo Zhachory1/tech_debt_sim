@@ -23,12 +23,12 @@ class Codebase {
         }
 
         // Default constants for codebase management
-        this.constants.set("maxFailureProbability", 0.01);
+        this.constants.set("maxFailureProbability", 0.005);
         this.constants.set("minFailureProbability", 0.0001);
         this.constants.set("featureLaunchImpactDecay", 0.8);
-        this.constants.set("codeQualityDecayRate", 0.05);
+        this.constants.set("codeQualityDecayRate", 0.01);
         this.constants.set("featureImpactBase", 10);
-        this.constants.set("techDebtReductionEfficiency", 1.0);
+        this.constants.set("techDebtReductionEfficiency", 2.0);
         this.constants.set("maintenanceCostFactor", 100); // Cost per point of quality degradation
         this.constants.set("maxSeverity", 10);
         this.constants.set("minSeverity", 2);
@@ -78,14 +78,14 @@ class Codebase {
             feature => (currentTime - feature.launchDate) < this.impactWindow
         );
 
-        // Calculate diminishing returns for recent features
-        this.recentFeatureLaunches.forEach((feature, index) => {
+        let pendingFeatureIndex = 0;
+        this.recentFeatureLaunches.forEach(feature => {
             if (!feature.hasImpactedReputation) {
-                // Apply diminishing returns based on how many recent features there are
-                const diminishingFactor = Math.pow(this.constants.get("featureLaunchImpactDecay"), index);
+                const diminishingFactor = Math.pow(this.constants.get("featureLaunchImpactDecay"), pendingFeatureIndex);
                 const impact = feature.impactValue * diminishingFactor;
                 totalImpact += impact;
                 feature.hasImpactedReputation = true;
+                pendingFeatureIndex++;
             }
         });
         if (totalImpact !== 0) {

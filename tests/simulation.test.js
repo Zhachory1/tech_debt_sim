@@ -18,6 +18,7 @@ this.Constants = Constants;
 this.Developer = Developer;
 this.EngineeringTeam = EngineeringTeam;
 this.Product = Product;
+this.Codebase = Codebase;
 this.Lead = Lead;
 this.Project = Project;
 this.PROJECT_TYPE = PROJECT_TYPE;
@@ -96,6 +97,38 @@ const startingBurnout = developer.burnoutLevel;
 developer.updateSatisfaction({ workload: 1, recentFailures: 1, codebaseQuality: 10, teamSize: 1 });
 assert(developer.satisfaction < startingSatisfaction);
 assert(developer.burnoutLevel > startingBurnout);
+
+const balancedSimulation = new context.Simulation({ seed: 123 });
+const originalConsoleLog = console.log;
+console.log = () => {};
+try {
+  for (let i = 0; i < 300; i++) {
+    balancedSimulation.runStep();
+  }
+} finally {
+  console.log = originalConsoleLog;
+}
+const balancedMetrics = balancedSimulation.getCurrentMetrics();
+assert(balancedMetrics.product.userCount > 500);
+assert(balancedMetrics.product.userCount < 10000);
+assert(balancedMetrics.codebase.codeQuality > 40);
+assert(balancedMetrics.team.developerCount > 0);
+
+const featureImpactConstants = new context.Constants();
+featureImpactConstants.setSeed(13);
+const codebase = new context.Codebase(80, featureImpactConstants);
+const completedFeatureA = new context.Project(context.PROJECT_TYPE.FEATURE, 10, 'Completed Feature A', featureImpactConstants);
+const completedFeatureB = new context.Project(context.PROJECT_TYPE.FEATURE, 10, 'Completed Feature B', featureImpactConstants);
+codebase.addFeatureLaunch(completedFeatureA).hasImpactedReputation = true;
+codebase.addFeatureLaunch(completedFeatureB).hasImpactedReputation = true;
+codebase.addFeatureLaunch(new context.Project(context.PROJECT_TYPE.FEATURE, 10, 'New Feature', featureImpactConstants));
+assert.strictEqual(codebase.getReputationImpactFromFeatures(), 10);
+
+const cappedProduct = new context.Product(7999999990, new context.Constants());
+cappedProduct.reputation = 100;
+cappedProduct.updateUserCount();
+assert.strictEqual(cappedProduct.userCount, cappedProduct.constants.get('maxUserCount'));
+assert.strictEqual(cappedProduct.getMetrics().maxUserCount, 8000000000);
 
 const leadConstants = new context.Constants();
 leadConstants.setSeed(23);

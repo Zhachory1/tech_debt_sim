@@ -18,12 +18,13 @@ class Product {
         }
         
         // Default constants for product management
-        this.constants.set("reputationThreshold", 15);
+        this.constants.set("reputationThreshold", 25);
         this.constants.set("reputationDecay", 0.1);
         // Max (or min) Rep would get us this rate of user increase.
-        this.constants.set("maxUserGrowthRate", 0.05); // 5%
+        this.constants.set("maxUserGrowthRate", 0.01); // 1%
         this.constants.set("revenuePerUser", 10);
         this.constants.set("churnRate", 0.001); // 0.1%; takes in market growth and churn rate
+        this.constants.set("maxUserCount", 8000000000);
     }
     
     setCodebase(codebase) {
@@ -89,7 +90,7 @@ class Product {
         userChange -= churn;
         
         // Apply user change
-        this.userCount = Math.max(0, this.userCount + userChange);
+        this.userCount = Math.max(0, Math.min(this.constants.get("maxUserCount"), this.userCount + userChange));
         
         return userChange;
     }
@@ -133,6 +134,7 @@ class Product {
             userCount: Math.round(this.userCount),
             revenue: Math.round(this.revenue),
             reputationThreshold: this.constants.get("reputationThreshold"),
+            maxUserCount: this.constants.get("maxUserCount"),
             churnRate: Math.round(this.constants.get("churnRate") * 10000) / 100 // As percentage
         };
     }
