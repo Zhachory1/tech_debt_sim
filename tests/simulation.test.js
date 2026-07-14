@@ -97,6 +97,22 @@ developer.updateSatisfaction({ workload: 1, recentFailures: 1, codebaseQuality: 
 assert(developer.satisfaction < startingSatisfaction);
 assert(developer.burnoutLevel > startingBurnout);
 
+const balancedSimulation = new context.Simulation({ seed: 123 });
+const originalConsoleLog = console.log;
+console.log = () => {};
+try {
+  for (let i = 0; i < 300; i++) {
+    balancedSimulation.runStep();
+  }
+} finally {
+  console.log = originalConsoleLog;
+}
+const balancedMetrics = balancedSimulation.getCurrentMetrics();
+assert(balancedMetrics.product.userCount > 500);
+assert(balancedMetrics.product.userCount < 5000);
+assert(balancedMetrics.codebase.codeQuality > 40);
+assert(balancedMetrics.team.developerCount > 0);
+
 const featureImpactConstants = new context.Constants();
 featureImpactConstants.setSeed(13);
 const codebase = new context.Codebase(80, featureImpactConstants);
