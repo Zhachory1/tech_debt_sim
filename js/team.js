@@ -201,6 +201,8 @@ class EngineeringTeam {
         // Auto-assign projects if no leads (mentioned in requirements)
         if (this.hasNoLeads()) {
             this.autoApproveProjects();
+        } else {
+            this.reviewProjectsWithLeads();
         }
 
         // Assign available projects
@@ -216,6 +218,27 @@ class EngineeringTeam {
         const unapprovedProjects = this.ideaQueue.filter(p => !p.isApproved());
         unapprovedProjects.forEach(project => {
             if (this.constants.random() < this.constants.get("projectSuggestionChance")) { // 10% chance per step to auto-approve
+                this.approveProject(project.id);
+            }
+        });
+    }
+
+    reviewProjectsWithLeads() {
+        const activeLeads = this.leads.filter(lead => lead && typeof lead.reviewProject === 'function');
+        if (activeLeads.length === 0) {
+            return;
+        }
+
+        const prioritizingLead = activeLeads.find(lead => typeof lead.prioritizeProjects === 'function');
+        if (prioritizingLead) {
+            this.ideaQueue = prioritizingLead.prioritizeProjects(this.ideaQueue);
+        }
+
+        this.ideaQueue.slice().forEach(project => {
+            const reviews = activeLeads.map(lead => lead.reviewProject(project));
+            const approval = reviews.find(review => review && review.approved);
+            project.leadFeedback = approval ? approval.feedback : reviews[0]?.feedback;
+            if (approval) {
                 this.approveProject(project.id);
             }
         });
