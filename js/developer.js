@@ -32,17 +32,17 @@ class Developer {
         this.constants.set("skillImpactOnProductivity", 0.4);
         this.constants.set("knowledgeImpactOnProductivity", 0.3);
         this.constants.set("satisfactionImpactOnProductivity", 0.3);
-        this.constants.set("teamSizeImpactOnSatisfaction", 0.2);
-        this.constants.set("recentFailuresImpactOnSatisfaction", 0.3);
+        this.constants.set("teamSizeImpactOnSatisfaction", 0.05);
+        this.constants.set("recentFailuresImpactOnSatisfaction", 0.1);
         this.constants.set("workloadImpactThreshold", 0.7);
         this.constants.set("workloadImpactOnSatisfaction", 0.3);
         this.constants.set("workloadImpactOnBurnout", 0.3);
-        this.constants.set("techDebtImpactOnSatisfaction_Negative", 0.5);
+        this.constants.set("techDebtImpactOnSatisfaction_Negative", 0.2);
         this.constants.set("techDebtImpactOnSatisfaction_Positive", 0.1);
-        this.constants.set("techDebtImpactOnBurnout", 0.2);
+        this.constants.set("techDebtImpactOnBurnout", 0.05);
         this.constants.set("knowledgeGainMultiplier", 0.5);
-        this.constants.set("burnoutRecoveryRate", 0.5);
-        this.constants.set("satisfactionRecoveryRate", 0.5);
+        this.constants.set("burnoutRecoveryRate", 0.7);
+        this.constants.set("satisfactionRecoveryRate", 0.7);
     }
 
     generateName() {
@@ -179,7 +179,7 @@ class Developer {
 
     shouldLeave() {
         // Probability of leaving based on satisfaction and burnout
-        const leaveProbability = (100 - this.satisfaction) / 5000 + this.burnoutLevel / 10000;
+        const leaveProbability = (100 - this.satisfaction) / 20000 + this.burnoutLevel / 40000;
         return this.constants.random() < leaveProbability;
     }
 
