@@ -18,10 +18,10 @@ class Product {
         }
         
         // Default constants for product management
-        this.constants.set("reputationThreshold", 15);
+        this.constants.set("reputationThreshold", 25);
         this.constants.set("reputationDecay", 0.1);
         // Max (or min) Rep would get us this rate of user increase.
-        this.constants.set("maxUserGrowthRate", 0.05); // 5%
+        this.constants.set("maxUserGrowthRate", 0.01); // 1%
         this.constants.set("revenuePerUser", 10);
         this.constants.set("churnRate", 0.001); // 0.1%; takes in market growth and churn rate
     }
